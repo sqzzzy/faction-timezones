@@ -6,6 +6,8 @@ body {
   align-items: center;
   height: 100vh;
   overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #faction-logo {
@@ -36,7 +38,7 @@ body {
   height: 100%;
   position: relative;
   overflow: visible;
-  image-rendering: crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
 }
 
 #dayNightCanvas {
@@ -65,9 +67,6 @@ body {
   z-index: 10;
   pointer-events: none;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
-}
-
-#torn-time {
   animation: glowPulse 2.5s infinite;
 }
 
@@ -87,6 +86,7 @@ body {
   pointer-events: auto;
   text-align: center;
   z-index: 1;
+  touch-action: manipulation;
 }
 
 .circle-flag-wrapper {
@@ -97,6 +97,7 @@ body {
   width: fit-content;
   height: fit-content;
   touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -117,6 +118,8 @@ body {
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
   overflow: hidden;
   transition: all 0.2s ease;
+  pointer-events: auto;
+  touch-action: manipulation;
 }
 
 .circle-flag:hover {
@@ -134,7 +137,7 @@ body {
   position: absolute;
   bottom: 2px;
   left: 50%;
-  transform: translateX(-50%) rotate(45deg) translateZ(0); /* sharpens via GPU acceleration */
+  transform: translateX(-50%) rotate(45deg) translateZ(0);
   width: 8px;
   height: 8px;
   background: #ff3b3b;
@@ -148,17 +151,10 @@ body {
   box-shadow: 0 0 2px #000;
   border-radius: 2px;
   z-index: 3;
-
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
-
-.count > span {
-  transform: rotate(-45deg);
-  display: inline-block;
-}
-
 
 .count > span {
   transform: rotate(-45deg);
@@ -178,11 +174,9 @@ body {
   border-radius: 4px;
   white-space: nowrap;
   opacity: 0;
-  pointer-events: none;
   transition: opacity 0.2s ease;
   z-index: 10;
   box-shadow: 0 0 6px #ffbe3d;
-  pointer-events: none; /* ✅ allow taps to pass through */
 }
 
 .tooltip::after {
@@ -194,9 +188,6 @@ body {
   border-width: 4px;
   border-style: solid;
   border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
-}
-.circle-flag-wrapper:hover .tooltip {
-  opacity: 1;
 }
 
 .marker .details {
