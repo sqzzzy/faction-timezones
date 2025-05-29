@@ -135,11 +135,11 @@ body {
   bottom: -7px;
   left: 50%;
   transform: translateX(-50%) rotate(45deg) translateZ(0); /* sharpens via GPU acceleration */
-  width: 14px;
-  height: 14px;
+  width: 8px;
+  height: 8px;
   background: #ff3b3b;
   color: #fff;
-  font-size: 10px;
+  font-size: 8px;
   font-family: Arial, sans-serif;
   font-weight: bold;
   display: flex;
