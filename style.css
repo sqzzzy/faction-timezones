@@ -132,7 +132,7 @@ body {
 
 .count {
   position: absolute;
-  bottom: -2px;
+  bottom: 2px;
   left: 50%;
   transform: translateX(-50%) rotate(45deg) translateZ(0); /* sharpens via GPU acceleration */
   width: 8px;
