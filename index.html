@@ -87,7 +87,7 @@
           }
         });
 
-        div.querySelector(".close-btn").addEventListener("click", e => {
+        div.querySelector(".close-btn").addEventListener("pointerup", e => {
           e.stopPropagation();
           div.classList.remove("open", "active", "details-up");
         });
