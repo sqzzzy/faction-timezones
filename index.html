@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Faction Timezones Map</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div id="torn-time">Current Torn Time: <span id="utc-time">Loading...</span></div>
+
+  <div id="faction-logo">
+    <img src="logo.png" alt="Faction Logo" />
+  </div>
+
+  <div id="map-wrapper">
+    <div id="map-container">
+      <canvas id="dayNightCanvas"></canvas>
+    </div>
+  </div>
+
+  <div id="map-footer">Classicvirgin Time Zones</div>
+
+  <div id="country-counter">
+    <h3>Members by Country</h3>
+    <ul id="country-list"></ul>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/panzoom@9.4.0/dist/panzoom.min.js"></script>
+  <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
+
+<script>
+  async function loadMarkers() {
+    const container = document.getElementById("map-container");
+    const people = await fetch("people.json").then(res => res.json());
+
+    const countryCounts = {};
+
+    for (const p of people) {
+      const div = document.createElement("div");
+      div.className = "marker";
+      div.style.top = p.top;
+      div.style.left = p.left;
+      div.dataset.timezone = p.timezone;
+
+      const peopleCount = p.name.split("<br>").length;
+      countryCounts[p.flag] = (countryCounts[p.flag] || 0) + peopleCount;
+
+      div.innerHTML = `
+        <div class="circle-flag-wrapper">
+          <div class="tooltip">Click to view</div>
+          <div class="circle-flag">
+            <img class="flag" src="flags/${p.flag}.png" alt="${p.flag} flag" />
+          </div>
+          <div class="count"><span>${peopleCount}</span></div>
+        </div>
+        <div class="details">
+          <button class="close-btn">&times;</button>
+          ${p.name}<br />
+          <div class="time-box">
+            <span class="time">--:--:--</span>
+          </div>
+        </div>
+      `;
+
+      div.querySelector(".circle-flag-wrapper").addEventListener("click", e => {
+        e.stopPropagation();
+
+        // Close all other markers
+        document.querySelectorAll(".marker").forEach(m => {
+          if (m !== div) {
+            m.classList.remove("open", "active", "details-up");
+          }
+        });
+
+        // Toggle this one
+        div.classList.toggle("open");
+
+        if (div.classList.contains("open")) {
+          div.classList.add("active");
+
+          // Check if near top of map
+          const markerRect = div.getBoundingClientRect();
+          const mapRect = container.getBoundingClientRect();
+          const threshold = 100;
+          if (markerRect.top - mapRect.top < threshold) {
+            div.classList.add("details-up");
+          } else {
+            div.classList.remove("details-up");
+          }
+        } else {
+          div.classList.remove("active", "details-up");
+        }
+      });
+
+      div.querySelector(".close-btn").addEventListener("click", e => {
+        e.stopPropagation();
+        div.classList.remove("open", "active", "details-up");
+      });
+
+      container.appendChild(div);
+    }
+
+    // Populate country counter
+    const list = document.getElementById("country-list");
+    let total = 0;
+
+    Object.entries(countryCounts)
+      .sort((a, b) => b[1] - a[1])
+      .forEach(([flag, count]) => {
+        total += count;
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span><img src="flags/${flag}.png" alt="${flag}" style="width: 16px; vertical-align: middle;"> ${flag.toUpperCase()}</span>
+          <span>${count}</span>
+        `;
+        list.appendChild(li);
+      });
+
+    const totalLi = document.createElement("li");
+    totalLi.className = "country-total";
+    totalLi.innerHTML = `<strong>Total</strong><strong>${total}</strong>`;
+    list.appendChild(totalLi);
+  }
+
+  function updateUTCTime() {
+    const now = new Date();
+    const utc = now.toUTCString().split(" ")[4];
+    document.getElementById("utc-time").textContent = utc + " UTC";
+  }
+
+  function updateLocalTimes() {
+    document.querySelectorAll(".marker").forEach(marker => {
+      const tz = marker.dataset.timezone;
+      try {
+        const formatted = new Intl.DateTimeFormat("en-GB", {
+          timeZone: tz,
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false
+        }).format(new Date());
+        const timeEl = marker.querySelector(".time");
+        if (timeEl) timeEl.textContent = formatted;
+      } catch (e) {
+        console.error("Timezone error:", tz, e);
+      }
+    });
+  }
+
+  function updateDayNightShading() {
+    const canvas = document.getElementById('dayNightCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const width = canvas.width = canvas.offsetWidth;
+    const height = canvas.height = canvas.offsetHeight;
+
+    ctx.clearRect(0, 0, width, height);
+
+    const now = new Date();
+    const latMin = -90, latMax = 90;
+    const lonMin = -180, lonMax = 180;
+    const step = 1;
+    const twilightCutoff = -11 * (Math.PI / 180);
+
+    for (let y = 0; y < height; y += step) {
+      const lat = latMax - (y / height) * (latMax - latMin);
+      for (let x = 0; x < width; x += step) {
+        const lon = lonMin + (x / width) * (lonMax - lonMin);
+        const sunPos = SunCalc.getPosition(now, lat, lon);
+        if (sunPos.altitude < twilightCutoff) {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+          ctx.fillRect(x, y, step, step);
+        }
+      }
+    }
+  }
+
+  // Initialize
+  loadMarkers();
+  document.addEventListener("click", () => {
+    document.querySelectorAll(".marker.open").forEach(m => {
+      m.classList.remove("open", "active", "details-up");
+    });
+  });
+
+  updateUTCTime();
+  setInterval(updateUTCTime, 1000);
+
+  updateLocalTimes();
+  setInterval(updateLocalTimes, 1000);
+
+  updateDayNightShading();
+  setInterval(updateDayNightShading, 300000);
+
+  panzoom(document.getElementById("map-container"), {
+    maxZoom: 5,
+    minZoom: 1,
+    bounds: true,
+    boundsPadding: 0.1
+  });
+</script>
+
+</body>
+</html>
