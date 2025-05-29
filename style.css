@@ -134,12 +134,12 @@ body {
   position: absolute;
   bottom: -7px;
   left: 50%;
-  transform: translateX(-50%) rotate(45deg);
-  width: 8px;
-  height: 8px;
+  transform: translateX(-50%) rotate(45deg) translateZ(0); /* sharpens via GPU acceleration */
+  width: 14px;
+  height: 14px;
   background: #ff3b3b;
   color: #fff;
-  font-size: 6px;
+  font-size: 10px;
   font-family: Arial, sans-serif;
   font-weight: bold;
   display: flex;
@@ -148,7 +148,17 @@ body {
   box-shadow: 0 0 2px #000;
   border-radius: 2px;
   z-index: 3;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
+
+.count > span {
+  transform: rotate(-45deg);
+  display: inline-block;
+}
+
 
 .count > span {
   transform: rotate(-45deg);
