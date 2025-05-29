@@ -63,15 +63,36 @@
         </div>
       `;
 
-      div.querySelector(".circle-flag-wrapper").addEventListener("click", e => {
+      div.addEventListener("click", e => {
+      div.addEventListener("click", e => {
+        if (e.target.closest(".close-btn")) return;
+
         e.stopPropagation();
 
-        // Close all other markers
+        // Close others
         document.querySelectorAll(".marker").forEach(m => {
           if (m !== div) {
             m.classList.remove("open", "active", "details-up");
           }
         });
+
+        // Toggle this one
+        const isOpen = div.classList.toggle("open");
+
+        if (isOpen) {
+          div.classList.add("active");
+
+          const markerRect = div.getBoundingClientRect();
+          const mapRect = container.getBoundingClientRect();
+          if (markerRect.top - mapRect.top < 100) {
+            div.classList.add("details-up");
+          } else {
+            div.classList.remove("details-up");
+          }
+        } else {
+          div.classList.remove("active", "details-up");
+        }
+      });
 
         // Toggle this one
         div.classList.toggle("open");
