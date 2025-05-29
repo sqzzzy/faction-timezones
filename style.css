@@ -99,9 +99,9 @@ body {
   touch-action: manipulation;
 }
 
-@media (hover: none) and (pointer: coarse) {
-  .tooltip {
-    display: none;
+@media (hover: hover) and (pointer: fine) {
+  .circle-flag-wrapper:hover .tooltip {
+    opacity: 1;
   }
 }
 
