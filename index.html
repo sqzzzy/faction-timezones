@@ -219,7 +219,8 @@
     minZoom: 1,
     bounds: true,
     boundsPadding: 0.1,
-    excludeClass: 'marker'
+    // prevent panzoom from hijacking clicks on markers
+    exclude: [document.getElementById("map-container").querySelectorAll(".marker")]
   });
 </script>
 
