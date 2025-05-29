@@ -36,6 +36,7 @@ body {
   height: 100%;
   position: relative;
   overflow: visible;
+  image-rendering: crisp-edges;
 }
 
 #dayNightCanvas {
@@ -89,9 +90,19 @@ body {
 }
 
 .circle-flag-wrapper {
+  padding: 8px;
+  cursor: pointer;
+  display: inline-block;
   position: relative;
   width: fit-content;
   height: fit-content;
+  touch-action: manipulation;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .tooltip {
+    display: none;
+  }
 }
 
 .circle-flag {
@@ -161,6 +172,7 @@ body {
   transition: opacity 0.2s ease;
   z-index: 10;
   box-shadow: 0 0 6px #ffbe3d;
+  pointer-events: none; /* ✅ allow taps to pass through */
 }
 
 .tooltip::after {
