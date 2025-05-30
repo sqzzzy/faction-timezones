@@ -2,9 +2,47 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Faction Timezones Map</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    #mobile-list {
+      display: none;
+      width: 100vw;
+      min-height: 100vh;
+      padding: 80px 20px 40px;
+      box-sizing: border-box;
+      background: #111;
+      color: #eee;
+      font-family: Arial, sans-serif;
+    }
+
+    .mobile-entry {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid #333;
+      font-size: 16px;
+    }
+
+    .mobile-entry img {
+      width: 24px;
+      margin-right: 12px;
+    }
+
+    .mobile-name {
+      flex-grow: 1;
+      font-weight: bold;
+    }
+
+    .mobile-time {
+      color: #ffbe3d;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
   <div id="torn-time">Current Torn Time: <span id="utc-time">Loading...</span></div>
@@ -36,6 +74,12 @@
       const mobileList = document.getElementById("mobile-list");
       const people = await fetch("people.json").then(res => res.json());
 
+      const isMobile = (
+        window.matchMedia("(pointer: coarse)").matches ||
+        /Mobi|Android|iPhone|iPad|Tablet/i.test(navigator.userAgent) ||
+        window.innerWidth <= 820
+      );
+
       // Add UTC (Torn Time) as a pseudo-entry
       people.push({
         name: "Current Torn Time",
@@ -46,9 +90,31 @@
       });
 
       const countryCounts = {};
-
-      // Sort by horizontal map position (left %)
       people.sort((a, b) => parseFloat(a.left) - parseFloat(b.left));
+
+      if (isMobile) {
+        document.getElementById("map-wrapper").style.display = "none";
+        document.getElementById("country-counter").style.display = "none";
+        document.getElementById("map-footer").style.display = "none";
+        document.getElementById("faction-logo").style.display = "none";
+        mobileList.style.display = "block";
+
+        for (const p of people) {
+          const names = p.name.split("<br>");
+          names.forEach(name => {
+            const li = document.createElement("div");
+            li.className = "mobile-entry";
+            li.innerHTML = `
+              <img src="${p.flag === 'time' ? 'icons/clock.png' : 'flags/' + p.flag + '.png'}" alt="${p.flag}" />
+              <div class="mobile-name">${name}</div>
+              <div class="mobile-time" data-timezone="${p.timezone}">--:--:--</div>
+            `;
+            mobileList.appendChild(li);
+          });
+        }
+
+        return; // Skip map setup on mobile
+      }
 
       for (const p of people) {
         const div = document.createElement("div");
@@ -62,63 +128,9 @@
           countryCounts[p.flag] = (countryCounts[p.flag] || 0) + peopleCount;
         }
 
-        div.innerHTML = `
-          <div class="circle-flag-wrapper">
-            <div class="tooltip">Click to view</div>
-            <div class="circle-flag">
-              <img class="flag" src="${p.flag === 'time' ? 'icons/clock.png' : 'flags/' + p.flag + '.png'}" alt="${p.flag}" />
-            </div>
-            ${p.flag !== 'time' ? `<div class="count"><span>${peopleCount}</span></div>` : ''}
-          </div>
-          <div class="details">
-            <button class="close-btn">&times;</button>
-            ${p.name}<br />
-            <div class="time-box">
-              <span class="time">--:--:--</span>
-            </div>
-          </div>
-        `;
-
-        div.querySelector(".circle-flag-wrapper").addEventListener("click", e => {
-          e.stopPropagation();
-          document.querySelectorAll(".marker").forEach(m => {
-            if (m !== div) m.classList.remove("open", "active", "details-up");
-          });
-          div.classList.toggle("open");
-
-          if (div.classList.contains("open")) {
-            div.classList.add("active");
-            const markerRect = div.getBoundingClientRect();
-            const mapRect = container.getBoundingClientRect();
-            if (markerRect.top - mapRect.top < 100) {
-              div.classList.add("details-up");
-            } else {
-              div.classList.remove("details-up");
-            }
-          } else {
-            div.classList.remove("active", "details-up");
-          }
-        });
-
-        div.querySelector(".close-btn").addEventListener("click", e => {
-          e.stopPropagation();
-          div.classList.remove("open", "active", "details-up");
-        });
-
         container.appendChild(div);
-
-        // MOBILE LIST
-        const li = document.createElement("div");
-        li.className = "mobile-entry";
-        li.innerHTML = `
-          <img src="${p.flag === 'time' ? 'icons/clock.png' : 'flags/' + p.flag + '.png'}" alt="${p.flag}" class="mobile-flag">
-          <div class="mobile-name">${p.name}</div>
-          <div class="mobile-time" data-timezone="${p.timezone}">--:--:--</div>
-        `;
-        mobileList.appendChild(li);
       }
 
-      // Country list
       const list = document.getElementById("country-list");
       let total = 0;
       Object.entries(countryCounts).sort((a, b) => b[1] - a[1]).forEach(([flag, count]) => {
@@ -131,6 +143,10 @@
       totalLi.className = "country-total";
       totalLi.innerHTML = `<strong>Total</strong><strong>${total}</strong>`;
       list.appendChild(totalLi);
+
+      // Run day/night shading if not mobile
+      updateDayNightShading();
+      setInterval(updateDayNightShading, 300000);
     }
 
     function updateUTCTime() {
@@ -140,7 +156,7 @@
     }
 
     function updateLocalTimes() {
-      document.querySelectorAll(".marker, .mobile-time").forEach(el => {
+      document.querySelectorAll(".mobile-time").forEach(el => {
         const tz = el.dataset.timezone;
         if (!tz) return;
         try {
@@ -151,12 +167,7 @@
             second: "2-digit",
             hour12: false
           }).format(new Date());
-          if (el.classList.contains("mobile-time")) {
-            el.textContent = formatted;
-          } else {
-            const timeEl = el.querySelector(".time");
-            if (timeEl) timeEl.textContent = formatted;
-          }
+          el.textContent = formatted;
         } catch (e) {
           console.error("Timezone error:", tz, e);
         }
@@ -188,23 +199,10 @@
     }
 
     loadMarkers();
-    document.addEventListener("click", () => {
-      document.querySelectorAll(".marker.open").forEach(m => m.classList.remove("open", "active", "details-up"));
-    });
-
     updateUTCTime();
     setInterval(updateUTCTime, 1000);
     updateLocalTimes();
     setInterval(updateLocalTimes, 1000);
-    updateDayNightShading();
-    setInterval(updateDayNightShading, 300000);
-
-    panzoom(document.getElementById("map-container"), {
-      maxZoom: 5,
-      minZoom: 1,
-      bounds: true,
-      boundsPadding: 0.1
-    });
   </script>
 </body>
 </html>
