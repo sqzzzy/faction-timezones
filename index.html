@@ -6,11 +6,13 @@
   <title>Faction Timezones Map</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet" />
   <style>
-    body {
+    html, body {
       margin: 0;
+      height: 100%;
       background: #111;
       font-family: Arial, sans-serif;
       color: white;
+      overflow: hidden;
     }
 
     #map-wrapper {
@@ -42,7 +44,6 @@
       z-index: 1;
     }
 
-    /* Mobile Header + Layout */
     #mobile-wrapper {
       display: flex;
       flex-direction: column;
@@ -79,16 +80,7 @@
       -webkit-overflow-scrolling: touch;
     }
 
-    html, body {
-      height: 100%;
-      margin: 0;
-      overflow: hidden;
-      background: #111;
-      font-family: Arial, sans-serif;
-      color: white;
-    }
-
-    #country-counter {
+    .country-counter {
       background: rgba(0, 0, 0, 0.7);
       padding: 10px 14px;
       border-radius: 10px;
@@ -96,19 +88,19 @@
       margin-bottom: 20px;
     }
 
-    #country-counter ul {
+    .country-counter ul {
       list-style: none;
       padding: 0;
       margin: 0;
     }
 
-    #country-counter li {
+    .country-counter li {
       display: flex;
       justify-content: space-between;
       margin-bottom: 4px;
     }
 
-    #country-counter li.country-total {
+    .country-counter li.country-total {
       border-top: 1px solid #ffbe3d;
       margin-top: 6px;
       padding-top: 4px;
@@ -157,7 +149,6 @@
       color: white;
     }
 
-    /* Hide desktop elements on mobile */
     @media (max-width: 768px) {
       #map-wrapper,
       #map-footer,
@@ -172,14 +163,12 @@
   </style>
 </head>
 <body>
-
-  <!-- Desktop Map Content -->
   <div id="map-wrapper">
     <div id="map-container">
       <canvas id="dayNightCanvas"></canvas>
     </div>
     <div id="map-footer">Classicvirgin Time Zones</div>
-    <div id="country-counter">
+    <div id="country-counter" class="country-counter">
       <h3>Members by Country</h3>
       <ul id="country-list"></ul>
     </div>
@@ -188,16 +177,15 @@
     </div>
   </div>
 
-  <!-- Mobile Layout -->
   <div id="mobile-wrapper">
     <div id="mobile-header">
       <img src="Logo.png" alt="Logo" />
       <h1>Classicvirgin Time Zones</h1>
     </div>
     <div id="mobile-content">
-      <div id="country-counter">
+      <div id="mobile-country-counter" class="country-counter">
         <h3>Members by Country</h3>
-        <ul id="country-list"></ul>
+        <ul id="mobile-country-list"></ul>
       </div>
       <ul id="timezone-list"></ul>
     </div>
@@ -250,7 +238,10 @@
         }
       }
 
-      const list = document.getElementById("country-list");
+      const list = isMobile
+        ? document.getElementById("mobile-country-list")
+        : document.getElementById("country-list");
+
       let total = 0;
       Object.entries(countryCounts).sort((a, b) => b[1] - a[1]).forEach(([flag, count]) => {
         total += count;
