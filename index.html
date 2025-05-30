@@ -12,19 +12,30 @@
       background: #111;
       color: #eee;
       font-family: Arial, sans-serif;
+      max-width: 100vw;
+      min-height: 100vh;
+      box-sizing: border-box;
     }
 
     .mobile-row {
-      padding: 8px 0;
+      padding: 12px 0;
       border-bottom: 1px solid #333;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 18px;
     }
 
     .flag-icon {
-      width: 20px;
+      width: 24px;
       height: auto;
+    }
+
+    .mobile-time {
+      color: #ffbe3d;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
     }
   </style>
 </head>
@@ -68,14 +79,24 @@
         const listContainer = document.getElementById("mobile-list-view");
         listContainer.style.display = "block";
 
-        people.forEach(p => {
+        // Sort people by left position (furthest left to right)
+        const sortedPeople = [...people].sort((a, b) => {
+          const aLeft = parseFloat(a.left);
+          const bLeft = parseFloat(b.left);
+          return aLeft - bLeft;
+        });
+
+        sortedPeople.forEach(p => {
           const names = p.name.split("<br>");
           names.forEach(name => {
             const row = document.createElement("div");
             row.className = "mobile-row";
             row.innerHTML = `
-              <img src="flags/${p.flag}.png" alt="${p.flag}" class="flag-icon" />
-              <strong>${name}</strong> – <span class="mobile-time" data-tz="${p.timezone}">Loading...</span>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <img src="flags/${p.flag}.png" alt="${p.flag}" class="flag-icon" />
+                <strong>${name}</strong>
+              </div>
+              <span class="mobile-time" data-tz="${p.timezone}">Loading...</span>
             `;
             listContainer.appendChild(row);
           });
