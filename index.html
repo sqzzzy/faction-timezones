@@ -44,7 +44,7 @@
 
     /* Mobile Header + Layout */
     #mobile-wrapper {
-      display: none;
+      display: flex;
       flex-direction: column;
       height: 100vh;
       overflow: hidden;
@@ -76,6 +76,16 @@
       overflow-y: auto;
       padding: 16px;
       background: #111;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #111;
+      font-family: Arial, sans-serif;
+      color: white;
     }
 
     #country-counter {
