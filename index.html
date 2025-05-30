@@ -6,14 +6,11 @@
   <title>Faction Timezones Map</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet" />
   <style>
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
-      height: 100%;
       background: #111;
       font-family: Arial, sans-serif;
       color: white;
-      overflow: hidden;
     }
 
     #map-wrapper {
@@ -21,8 +18,8 @@
       max-width: 1000px;
       aspect-ratio: 1327 / 768;
       position: relative;
-      margin: 0 auto;
       touch-action: none;
+      margin: 0 auto;
     }
 
     #map-container {
@@ -45,63 +42,7 @@
       z-index: 1;
     }
 
-    #map-footer,
-    #country-counter,
-    #faction-logo {
-      position: absolute;
-      z-index: 5;
-    }
-
-    #map-footer {
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 24px;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 6px 14px;
-      border-radius: 10px;
-      box-shadow: 0 0 8px #ffbe3d;
-    }
-
-    #country-counter {
-      top: 20px;
-      right: 20px;
-      background: rgba(0, 0, 0, 0.7);
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-size: 13px;
-    }
-
-    #country-counter ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    #country-counter li {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 4px;
-    }
-
-    #country-counter li.country-total {
-      border-top: 1px solid #ffbe3d;
-      margin-top: 6px;
-      padding-top: 4px;
-      font-weight: bold;
-    }
-
-    #faction-logo {
-      bottom: 20px;
-      right: 20px;
-    }
-
-    #faction-logo img {
-      height: 120px;
-      filter: drop-shadow(8px 6px 4px rgba(0, 0, 0, 0.9));
-    }
-
-    /* Mobile Layout */
+    /* Mobile Header + Layout */
     #mobile-wrapper {
       display: flex;
       flex-direction: column;
@@ -136,7 +77,42 @@
       padding: 16px;
       background: #111;
       -webkit-overflow-scrolling: touch;
-      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #111;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+
+    #country-counter {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    #country-counter ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #country-counter li {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    #country-counter li.country-total {
+      border-top: 1px solid #ffbe3d;
+      margin-top: 6px;
+      padding-top: 4px;
+      font-weight: bold;
     }
 
     #timezone-list {
@@ -181,7 +157,7 @@
       color: white;
     }
 
-    /* Responsive */
+    /* Hide desktop elements on mobile */
     @media (max-width: 768px) {
       #map-wrapper,
       #map-footer,
@@ -196,7 +172,8 @@
   </style>
 </head>
 <body>
-  <!-- Desktop View -->
+
+  <!-- Desktop Map Content -->
   <div id="map-wrapper">
     <div id="map-container">
       <canvas id="dayNightCanvas"></canvas>
@@ -211,7 +188,7 @@
     </div>
   </div>
 
-  <!-- Mobile View -->
+  <!-- Mobile Layout -->
   <div id="mobile-wrapper">
     <div id="mobile-header">
       <img src="Logo.png" alt="Logo" />
@@ -273,24 +250,21 @@
         }
       }
 
-      const list = document.querySelectorAll("#country-list");
-      list.forEach(ul => {
-        ul.innerHTML = '';
-        let total = 0;
-        Object.entries(countryCounts).sort((a, b) => b[1] - a[1]).forEach(([flag, count]) => {
-          total += count;
-          const li = document.createElement("li");
-          li.innerHTML = `
-            <span><img src="flags/${flag}.png" style="width: 16px; vertical-align: middle;"> ${flag.toUpperCase()}</span>
-            <span>${count}</span>`;
-          ul.appendChild(li);
-        });
-
-        const totalLi = document.createElement("li");
-        totalLi.className = "country-total";
-        totalLi.innerHTML = `<strong>Total</strong><strong>${total}</strong>`;
-        ul.appendChild(totalLi);
+      const list = document.getElementById("country-list");
+      let total = 0;
+      Object.entries(countryCounts).sort((a, b) => b[1] - a[1]).forEach(([flag, count]) => {
+        total += count;
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span><img src="flags/${flag}.png" style="width: 16px; vertical-align: middle;"> ${flag.toUpperCase()}</span>
+          <span>${count}</span>`;
+        list.appendChild(li);
       });
+
+      const totalLi = document.createElement("li");
+      totalLi.className = "country-total";
+      totalLi.innerHTML = `<strong>Total</strong><strong>${total}</strong>`;
+      list.appendChild(totalLi);
     }
 
     function updateTimes() {
