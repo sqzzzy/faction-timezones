@@ -7,17 +7,20 @@
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet" />
   <style>
+    body {
+      margin: 0;
+      background: #111;
+      font-family: Arial, sans-serif;
+    }
+
     #mobile-timezone-list {
       display: none;
       position: relative;
-      overflow-y: auto;
       height: 100vh;
-      padding: 80px 16px 40px;
+      overflow-y: auto;
       background: #111;
       color: #fff;
-      font-family: Arial, sans-serif;
-      max-height: 100vh;
-      padding-bottom: 80px;
+      padding: 16px;
       box-sizing: border-box;
     }
 
@@ -28,22 +31,45 @@
     }
 
     #mobile-timezone-list li {
-      padding: 12px 0;
-      border-bottom: 1px solid #333;
-      font-size: 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #333;
+      font-size: 17px;
     }
 
     #mobile-timezone-list li .name {
       flex-grow: 1;
-      margin-left: 8px;
+      margin-left: 10px;
+      font-size: 16px;
     }
 
     #mobile-timezone-list li .time {
       color: #ffbe3d;
       font-family: 'Courier New', monospace;
+      font-weight: bold;
+    }
+
+    #mobile-timezone-list li.torn-time {
+      background: #ffbe3d;
+      color: white;
+      font-weight: bold;
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      box-shadow: 0 0 10px #ffbe3d;
+    }
+
+    #mobile-timezone-list li.torn-time .time {
+      color: white;
+    }
+
+    /* Optional: disable zoom */
+    @media (max-width: 768px) {
+      html, body {
+        touch-action: manipulation;
+      }
     }
   </style>
 </head>
@@ -61,6 +87,7 @@
   </div>
 
   <div id="map-footer">Classicvirgin Time Zones</div>
+
   <div id="country-counter">
     <h3>Members by Country</h3>
     <ul id="country-list"></ul>
@@ -86,7 +113,7 @@
           name: "Torn Time",
           timezone: "UTC",
           flag: "clock",
-          left: "43%",
+          left: "43%"
         },
         ...people
       ].sort((a, b) => parseFloat(a.left) - parseFloat(b.left));
@@ -113,15 +140,19 @@
 
           container.appendChild(div);
         } else {
-          // Mobile list
           const names = p.name.split("<br>");
           names.forEach(name => {
             const li = document.createElement("li");
-            li.innerHTML = `
-              <span>${p.flag === 'clock' ? '🕒' : `<img src='flags/${p.flag}.png' width='18'>`}</span>
-              <span class="name">${name}</span>
-              <span class="time" data-tz="${p.timezone}">--:--:--</span>
-            `;
+            if (p.flag === 'clock') {
+              li.classList.add("torn-time");
+              li.innerHTML = `<span>🕒 ${name}</span><span class="time" data-tz="${p.timezone}">--:--:--</span>`;
+            } else {
+              li.innerHTML = `
+                <span><img src="flags/${p.flag}.png" width="20"></span>
+                <span class="name">${name}</span>
+                <span class="time" data-tz="${p.timezone}">--:--:--</span>
+              `;
+            }
             timezoneList.appendChild(li);
           });
         }
