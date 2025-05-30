@@ -52,12 +52,19 @@
   <div id="mobile-list-view"></div>
 
   <script>
-    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+    const isMobile = (
+      window.matchMedia("(pointer: coarse)").matches ||
+      /Mobi|Android|iPhone|iPad|Tablet/i.test(navigator.userAgent) ||
+      window.innerWidth <= 820
+    );
 
     async function loadMarkersOrList() {
       const people = await fetch("people.json").then(res => res.json());
 
       if (isMobile) {
+        console.log("Mobile view detected");
+        document.getElementById("map-wrapper").style.display = "none";
+        document.getElementById("country-counter").style.display = "none";
         const listContainer = document.getElementById("mobile-list-view");
         listContainer.style.display = "block";
 
@@ -74,7 +81,8 @@
           });
         });
       } else {
-        // Normal map loading logic here (skip for this demo)
+        console.log("Desktop view - map would load here.");
+        // Add map setup logic here
       }
     }
 
