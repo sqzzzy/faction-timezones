@@ -6,8 +6,47 @@
   <title>Faction Timezones Map</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    #mobile-timezone-list {
+      display: none;
+      position: relative;
+      overflow-y: auto;
+      height: 100vh;
+      padding: 80px 16px 40px;
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    #mobile-timezone-list ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #mobile-timezone-list li {
+      padding: 12px 0;
+      border-bottom: 1px solid #333;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    #mobile-timezone-list li .name {
+      flex-grow: 1;
+      margin-left: 8px;
+    }
+
+    #mobile-timezone-list li .time {
+      color: #ffbe3d;
+      font-family: 'Courier New', monospace;
+    }
+  </style>
 </head>
 <body>
+  <div id="torn-time">Current Torn Time: <span id="utc-time">Loading...</span></div>
+
   <div id="faction-logo">
     <img src="Logo.png" alt="Faction Logo" />
   </div>
@@ -24,7 +63,6 @@
     <ul id="country-list"></ul>
   </div>
 
-  <!-- Mobile View Timezone List -->
   <div id="mobile-timezone-list">
     <ul id="timezone-list"></ul>
   </div>
@@ -50,6 +88,15 @@
         ...people
       ].sort((a, b) => parseFloat(a.left) - parseFloat(b.left));
 
+      if (isMobile) {
+        document.getElementById("map-wrapper").style.display = "none";
+        document.getElementById("country-counter").style.display = "none";
+        document.getElementById("map-footer").style.display = "none";
+        document.getElementById("faction-logo").style.display = "none";
+        document.getElementById("torn-time").style.display = "none";
+        document.getElementById("mobile-timezone-list").style.display = "block";
+      }
+
       for (const p of sortedPeople) {
         const peopleCount = p.name.split("<br>").length;
         countryCounts[p.flag] = (countryCounts[p.flag] || 0) + peopleCount;
@@ -61,46 +108,19 @@
           div.style.left = p.left;
           div.dataset.timezone = p.timezone;
 
-          div.innerHTML = `
-            <div class="circle-flag-wrapper">
-              <div class="tooltip">Click to view</div>
-              <div class="circle-flag">
-                <img class="flag" src="flags/${p.flag}.png" alt="${p.flag} flag" />
-              </div>
-              <div class="count"><span>${peopleCount}</span></div>
-            </div>
-            <div class="details">
-              <button class="close-btn">&times;</button>
-              ${p.name}<br />
-              <div class="time-box">
-                <span class="time">--:--:--</span>
-              </div>
-            </div>
-          `;
-
-          div.querySelector(".circle-flag-wrapper").addEventListener("click", e => {
-            e.stopPropagation();
-            document.querySelectorAll(".marker").forEach(m => {
-              if (m !== div) m.classList.remove("open", "active", "details-up");
-            });
-            div.classList.toggle("open");
-            if (div.classList.contains("open")) div.classList.add("active");
-          });
-
-          div.querySelector(".close-btn").addEventListener("click", e => {
-            e.stopPropagation();
-            div.classList.remove("open", "active", "details-up");
-          });
-
           container.appendChild(div);
         } else {
           // Mobile list
-          const li = document.createElement("li");
-          li.innerHTML = `
-            <img src="flags/${p.flag}.png" alt="${p.flag}" style="width: 18px; vertical-align: middle;">
-            <strong>${p.name}</strong> - <span class="time" data-tz="${p.timezone}">--:--:--</span>
-          `;
-          timezoneList.appendChild(li);
+          const names = p.name.split("<br>");
+          names.forEach(name => {
+            const li = document.createElement("li");
+            li.innerHTML = `
+              <span>${p.flag === 'clock' ? '🕒' : `<img src='flags/${p.flag}.png' width='18'>`}</span>
+              <span class="name">${name}</span>
+              <span class="time" data-tz="${p.timezone}">--:--:--</span>
+            `;
+            timezoneList.appendChild(li);
+          });
         }
       }
 
@@ -170,19 +190,6 @@
     setInterval(updateTimes, 1000);
     updateDayNightShading();
     setInterval(updateDayNightShading, 300000);
-
-    if (!isMobile) {
-      document.addEventListener("click", () => {
-        document.querySelectorAll(".marker.open").forEach(m => m.classList.remove("open", "active"));
-      });
-
-      panzoom(document.getElementById("map-container"), {
-        maxZoom: 5,
-        minZoom: 1,
-        bounds: true,
-        boundsPadding: 0.1
-      });
-    }
   </script>
 </body>
 </html>
