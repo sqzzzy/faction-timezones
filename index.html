@@ -52,27 +52,29 @@
     }
 
     #mobile-header {
-      display: flex;
-      align-items: center;
-      background: #ffbe3d;
-      padding: 10px 16px;
-      gap: 12px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
-      flex-shrink: 0;
-    }
-
-    #mobile-header img {
-      height: 60px;
-      margin-left: -15px;
-    }
-
-    #mobile-header h1 {
-      font-size: 26px;
-      color: white;
-      margin: 0;
-      font-weight: bold;
-      margin-left: -10px;
-    }
+    display: flex;
+    align-items: center;
+    background: #ffbe3d;
+    padding: 10px 16px 10px 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+    flex-shrink: 0;
+    position: relative;
+  }
+  
+  #mobile-header img {
+    height: 60px;
+    flex-shrink: 0;
+  }
+  
+  #mobile-header h1 {
+    flex: 1;
+    text-align: center;
+    margin: 0;
+    font-size: 26px;
+    color: white;
+    font-weight: bold;
+    padding-right: 40px; /* ensures it's not visually pushed too far right by default */
+  }
 
     #mobile-content {
       flex: 1;
