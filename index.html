@@ -2,25 +2,110 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Faction Timezones Map</title>
-  <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet" />
   <style>
     body {
       margin: 0;
       background: #111;
       font-family: Arial, sans-serif;
+      color: white;
     }
 
+    #map-wrapper {
+      width: 100%;
+      max-width: 1000px;
+      aspect-ratio: 1327 / 768;
+      position: relative;
+      touch-action: none;
+      margin: 0 auto;
+    }
+
+    #map-container {
+      background: url('Classicvirgin-Time-Zones-May-2025.png') no-repeat center center;
+      background-size: cover;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: visible;
+      image-rendering: crisp-edges;
+    }
+
+    #dayNightCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    #map-footer,
+    #country-counter,
+    #faction-logo {
+      position: absolute;
+      z-index: 5;
+    }
+
+    #map-footer {
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 6px 14px;
+      border-radius: 10px;
+      box-shadow: 0 0 8px #ffbe3d;
+    }
+
+    #country-counter {
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+    }
+
+    #country-counter ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #country-counter li {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    #country-counter li.country-total {
+      border-top: 1px solid #ffbe3d;
+      margin-top: 6px;
+      padding-top: 4px;
+      font-weight: bold;
+    }
+
+    #faction-logo {
+      bottom: 20px;
+      right: 20px;
+    }
+
+    #faction-logo img {
+      height: 120px;
+      filter: drop-shadow(8px 6px 4px rgba(0, 0, 0, 0.9));
+    }
+
+    /* Mobile View */
     #mobile-timezone-list {
       display: none;
       position: relative;
-      height: 100vh;
+      height: 100dvh;
       overflow-y: auto;
-      background: #111;
-      color: #fff;
       padding: 16px;
+      background: #111;
       box-sizing: border-box;
     }
 
@@ -34,28 +119,29 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 0;
+      padding: 14px 0;
       border-bottom: 1px solid #333;
       font-size: 17px;
+      gap: 10px;
     }
 
     #mobile-timezone-list li .name {
       flex-grow: 1;
       margin-left: 10px;
-      font-size: 16px;
     }
 
     #mobile-timezone-list li .time {
       color: #ffbe3d;
       font-family: 'Courier New', monospace;
       font-weight: bold;
+      white-space: nowrap;
     }
 
     #mobile-timezone-list li.torn-time {
       background: #ffbe3d;
       color: white;
       font-weight: bold;
-      padding: 14px;
+      padding: 16px;
       border-radius: 8px;
       margin-bottom: 10px;
       box-shadow: 0 0 10px #ffbe3d;
@@ -65,32 +151,35 @@
       color: white;
     }
 
-    /* Optional: disable zoom */
+    /* Responsive toggle */
     @media (max-width: 768px) {
-      html, body {
-        touch-action: manipulation;
+      #map-wrapper,
+      #country-counter,
+      #map-footer,
+      #faction-logo {
+        display: none;
+      }
+
+      #mobile-timezone-list {
+        display: block;
       }
     }
   </style>
 </head>
 <body>
-  <div id="torn-time">Current Torn Time: <span id="utc-time">Loading...</span></div>
-
-  <div id="faction-logo">
-    <img src="Logo.png" alt="Faction Logo" />
-  </div>
 
   <div id="map-wrapper">
     <div id="map-container">
       <canvas id="dayNightCanvas"></canvas>
     </div>
-  </div>
-
-  <div id="map-footer">Classicvirgin Time Zones</div>
-
-  <div id="country-counter">
-    <h3>Members by Country</h3>
-    <ul id="country-list"></ul>
+    <div id="map-footer">Classicvirgin Time Zones</div>
+    <div id="country-counter">
+      <h3>Members by Country</h3>
+      <ul id="country-list"></ul>
+    </div>
+    <div id="faction-logo">
+      <img src="Logo.png" alt="Faction Logo" />
+    </div>
   </div>
 
   <div id="mobile-timezone-list">
@@ -113,19 +202,10 @@
           name: "Torn Time",
           timezone: "UTC",
           flag: "clock",
-          left: "43%"
+          left: "43%",
         },
         ...people
       ].sort((a, b) => parseFloat(a.left) - parseFloat(b.left));
-
-      if (isMobile) {
-        document.getElementById("map-wrapper").style.display = "none";
-        document.getElementById("country-counter").style.display = "none";
-        document.getElementById("map-footer").style.display = "none";
-        document.getElementById("faction-logo").style.display = "none";
-        document.getElementById("torn-time").style.display = "none";
-        document.getElementById("mobile-timezone-list").style.display = "block";
-      }
 
       for (const p of sortedPeople) {
         const peopleCount = p.name.split("<br>").length;
@@ -137,22 +217,17 @@
           div.style.top = p.top || '0%';
           div.style.left = p.left;
           div.dataset.timezone = p.timezone;
-
           container.appendChild(div);
         } else {
           const names = p.name.split("<br>");
           names.forEach(name => {
             const li = document.createElement("li");
-            if (p.flag === 'clock') {
-              li.classList.add("torn-time");
-              li.innerHTML = `<span>🕒 ${name}</span><span class="time" data-tz="${p.timezone}">--:--:--</span>`;
-            } else {
-              li.innerHTML = `
-                <span><img src="flags/${p.flag}.png" width="20"></span>
-                <span class="name">${name}</span>
-                <span class="time" data-tz="${p.timezone}">--:--:--</span>
-              `;
-            }
+            if (p.flag === 'clock') li.classList.add('torn-time');
+            li.innerHTML = `
+              <span>${p.flag === 'clock' ? '🕒' : `<img src='flags/${p.flag}.png' width='18'>`}</span>
+              <span class="name">${name}</span>
+              <span class="time" data-tz="${p.timezone}">--:--:--</span>
+            `;
             timezoneList.appendChild(li);
           });
         }
@@ -165,7 +240,7 @@
           total += count;
           const li = document.createElement("li");
           li.innerHTML = `
-            <span><img src="flags/${flag}.png" alt="${flag}" style="width: 16px; vertical-align: middle;"> ${flag.toUpperCase()}</span>
+            <span><img src="flags/${flag}.png" style="width: 16px; vertical-align: middle;"> ${flag.toUpperCase()}</span>
             <span>${count}</span>`;
           list.appendChild(li);
         });
