@@ -52,7 +52,7 @@
   <div id="mobile-list-view"></div>
 
   <script>
-    const isMobile = window.innerWidth < 768;
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
 
     async function loadMarkersOrList() {
       const people = await fetch("people.json").then(res => res.json());
