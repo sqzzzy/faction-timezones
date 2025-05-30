@@ -13,7 +13,6 @@
       color: white;
     }
 
-    /* === Desktop Map === */
     #map-wrapper {
       width: 100%;
       max-width: 1000px;
@@ -43,31 +42,48 @@
       z-index: 1;
     }
 
-    #map-footer,
-    #country-counter,
-    #faction-logo {
-      position: absolute;
-      z-index: 5;
+    /* Mobile Header + Layout */
+    #mobile-wrapper {
+      display: none;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
     }
 
-    #map-footer {
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 24px;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 6px 14px;
-      border-radius: 10px;
-      box-shadow: 0 0 8px #ffbe3d;
+    #mobile-header {
+      display: flex;
+      align-items: center;
+      background: #ff9b00;
+      padding: 10px 16px;
+      gap: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+      flex-shrink: 0;
+    }
+
+    #mobile-header img {
+      height: 40px;
+    }
+
+    #mobile-header h1 {
+      font-size: 20px;
+      color: white;
+      margin: 0;
+      font-weight: bold;
+    }
+
+    #mobile-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      background: #111;
     }
 
     #country-counter {
-      top: 20px;
-      right: 20px;
       background: rgba(0, 0, 0, 0.7);
       padding: 10px 14px;
       border-radius: 10px;
       font-size: 13px;
+      margin-bottom: 20px;
     }
 
     #country-counter ul {
@@ -89,107 +105,35 @@
       font-weight: bold;
     }
 
-    #faction-logo {
-      bottom: 20px;
-      right: 20px;
-    }
-
-    #faction-logo img {
-      height: 120px;
-      filter: drop-shadow(8px 6px 4px rgba(0, 0, 0, 0.9));
-    }
-
-    /* === Mobile Header (Sticky) === */
-    #mobile-header {
-      background: #ff9e1b;
-      color: white;
-      font-family: 'Orbitron', sans-serif;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
-    }
-
-    #mobile-header img {
-      width: 50px;
-      flex-shrink: 0;
-      filter: drop-shadow(4px 4px 2px rgba(0,0,0,0.7));
-    }
-
-    #mobile-header h1 {
-      font-size: 18px;
-      margin: 0;
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* === Mobile Country Counter === */
-    #mobile-country-counter {
-      background: #111;
-      color: #ffbe3d;
-      padding: 12px 16px;
-      font-size: 14px;
-    }
-
-    #mobile-country-counter h3 {
-      margin: 0 0 8px;
-      font-size: 16px;
-    }
-
-    #mobile-country-counter ul {
+    #timezone-list {
       list-style: none;
       padding: 0;
       margin: 0;
     }
 
-    #mobile-country-counter li {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 4px;
-    }
-
-    #mobile-timezone-list {
-      background: #111;
-      padding: 10px 16px 80px;
-      overflow-y: auto;
-      height: calc(100dvh - 100px);
-    }
-
-    #mobile-timezone-list ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    #mobile-timezone-list li {
+    #timezone-list li {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 0;
+      padding: 14px 0;
       border-bottom: 1px solid #333;
       font-size: 17px;
-      gap: 4px;
+      gap: 6px;
     }
 
-    #mobile-timezone-list li .name {
+    #timezone-list li .name {
       flex-grow: 1;
-      margin-left: 8px;
+      margin-left: 10px;
     }
 
-    #mobile-timezone-list li .time {
+    #timezone-list li .time {
       color: #ffbe3d;
       font-family: 'Courier New', monospace;
       font-weight: bold;
       white-space: nowrap;
     }
 
-    #mobile-timezone-list li.torn-time {
+    #timezone-list li.torn-time {
       background: #ffbe3d;
       color: white;
       font-weight: bold;
@@ -199,46 +143,27 @@
       box-shadow: 0 0 10px #ffbe3d;
     }
 
-    #mobile-timezone-list li.torn-time .time {
+    #timezone-list li.torn-time .time {
       color: white;
     }
 
+    /* Hide desktop elements on mobile */
     @media (max-width: 768px) {
       #map-wrapper,
-      #country-counter,
       #map-footer,
       #faction-logo {
         display: none;
       }
 
-      #mobile-header,
-      #mobile-timezone-list,
-      #mobile-country-counter {
-        display: block;
+      #mobile-wrapper {
+        display: flex;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Mobile Header -->
-  <div id="mobile-header">
-    <img src="Logo.png" alt="Faction Logo" />
-    <h1>Classicvirgin Time Zones</h1>
-  </div>
-
-  <!-- Mobile Country Counter -->
-  <div id="mobile-country-counter">
-    <h3>Members by Country</h3>
-    <ul id="country-list"></ul>
-  </div>
-
-  <!-- Mobile Timezone List -->
-  <div id="mobile-timezone-list">
-    <ul id="timezone-list"></ul>
-  </div>
-
-  <!-- Desktop View -->
+  <!-- Desktop Map Content -->
   <div id="map-wrapper">
     <div id="map-container">
       <canvas id="dayNightCanvas"></canvas>
@@ -250,6 +175,21 @@
     </div>
     <div id="faction-logo">
       <img src="Logo.png" alt="Faction Logo" />
+    </div>
+  </div>
+
+  <!-- Mobile Layout -->
+  <div id="mobile-wrapper">
+    <div id="mobile-header">
+      <img src="Logo.png" alt="Logo" />
+      <h1>Classicvirgin Time Zones</h1>
+    </div>
+    <div id="mobile-content">
+      <div id="country-counter">
+        <h3>Members by Country</h3>
+        <ul id="country-list"></ul>
+      </div>
+      <ul id="timezone-list"></ul>
     </div>
   </div>
 
@@ -265,57 +205,56 @@
       const timezoneList = document.getElementById("timezone-list");
 
       const sortedPeople = [
-        { name: "Torn Time", timezone: "UTC", flag: "clock", left: "43%" },
+        {
+          name: "Torn Time",
+          timezone: "UTC",
+          flag: "clock",
+          left: "43%",
+        },
         ...people
       ].sort((a, b) => parseFloat(a.left) - parseFloat(b.left));
 
       for (const p of sortedPeople) {
-        const peopleCount = p.name.split("<br>").length;
-
-        if (p.flag !== 'clock') {
-          countryCounts[p.flag] = (countryCounts[p.flag] || 0) + peopleCount;
-        }
-
-        if (!isMobile) {
-          const div = document.createElement("div");
-          div.className = "marker";
-          div.style.top = p.top || '0%';
-          div.style.left = p.left;
-          div.dataset.timezone = p.timezone;
-          container.appendChild(div);
-        } else {
-          const names = p.name.split("<br>");
-          names.forEach(name => {
+        const names = p.name.split("<br>");
+        names.forEach(name => {
+          if (isMobile) {
             const li = document.createElement("li");
             if (p.flag === 'clock') li.classList.add('torn-time');
             li.innerHTML = `
               <span>${p.flag === 'clock' ? '🕒' : `<img src='flags/${p.flag}.png' width='18'>`}</span>
               <span class="name">${name}</span>
-              <span class="time" data-tz="${p.timezone}">--:--:--</span>
-            `;
+              <span class="time" data-tz="${p.timezone}">--:--:--</span>`;
             timezoneList.appendChild(li);
-          });
+          } else {
+            const div = document.createElement("div");
+            div.className = "marker";
+            div.style.top = p.top || '0%';
+            div.style.left = p.left;
+            div.dataset.timezone = p.timezone;
+            container.appendChild(div);
+          }
+        });
+
+        if (p.flag !== 'clock') {
+          countryCounts[p.flag] = (countryCounts[p.flag] || 0) + names.length;
         }
       }
 
-      // Country Counters
-      const lists = document.querySelectorAll("#country-list");
-      lists.forEach(list => {
-        list.innerHTML = '';
-        let total = 0;
-        Object.entries(countryCounts).sort((a, b) => b[1] - a[1]).forEach(([flag, count]) => {
-          total += count;
-          const li = document.createElement("li");
-          li.innerHTML = `
-            <span><img src="flags/${flag}.png" style="width: 16px; vertical-align: middle;"> ${flag.toUpperCase()}</span>
-            <span>${count}</span>`;
-          list.appendChild(li);
-        });
-        const totalLi = document.createElement("li");
-        totalLi.className = "country-total";
-        totalLi.innerHTML = `<strong>Total</strong><strong>${total}</strong>`;
-        list.appendChild(totalLi);
+      const list = document.getElementById("country-list");
+      let total = 0;
+      Object.entries(countryCounts).sort((a, b) => b[1] - a[1]).forEach(([flag, count]) => {
+        total += count;
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span><img src="flags/${flag}.png" style="width: 16px; vertical-align: middle;"> ${flag.toUpperCase()}</span>
+          <span>${count}</span>`;
+        list.appendChild(li);
       });
+
+      const totalLi = document.createElement("li");
+      totalLi.className = "country-total";
+      totalLi.innerHTML = `<strong>Total</strong><strong>${total}</strong>`;
+      list.appendChild(totalLi);
     }
 
     function updateTimes() {
