@@ -215,30 +215,26 @@ body {
 
 .close-btn {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  background: #ff0000;
-  border: 2px solid #ff0000;
-  border-radius: 50%;
-  font-size: 14px;
+  top: 0;
+  right: 0;
+  background: #222;
+  border: none;
+  border-top-right-radius: 8px;
+  font-size: 16px;
   font-weight: bold;
-  color: #ffffff;
+  color: #ff0000;
   cursor: pointer;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 4px 8px;
   z-index: 15;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+  box-shadow: none;
   transition: background 0.2s, color 0.2s;
+  overflow: hidden;
 }
 
 .close-btn:hover {
   background: #ff0000;
   color: #fff;
 }
-
 
 .time-box {
   margin-top: 6px;
