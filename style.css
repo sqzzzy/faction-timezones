@@ -225,18 +225,16 @@ body {
   font-weight: bold;
   color: #ffffff;
   cursor: pointer;
-  padding: 4px 6px;
+  width: 36px;   /* wider */
+  height: 24px;  /* shorter */
   z-index: 15;
   box-shadow: none;
   transition: background 0.2s, color 0.2s;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
-.close-btn:hover {
-  background: #cc0000;
-  color: #fff;
-}
-
 
 .time-box {
   margin-top: 6px;
