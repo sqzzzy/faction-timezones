@@ -221,12 +221,12 @@ body {
   border: none;
   border-top-right-radius: 6px;
   border-bottom-left-radius: 4px;
-  font-size: 14px;
+  font-size: 8px;
   font-weight: bold;
   color: #ffffff;
   cursor: pointer;
-  width: 36px;   /* wider */
-  height: 24px;  /* shorter */
+  width: 24px;   /* wider */
+  height: 12px;  /* shorter */
   z-index: 15;
   box-shadow: none;
   transition: background 0.2s, color 0.2s;
